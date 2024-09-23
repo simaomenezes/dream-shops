@@ -1,4 +1,8 @@
 package com.menezes.neto.dreamshops.repository;
 
-public interface ProductRepository {
+import com.menezes.neto.dreamshops.model.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
 }

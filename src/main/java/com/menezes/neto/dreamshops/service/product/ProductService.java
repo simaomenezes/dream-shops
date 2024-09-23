@@ -1,16 +1,44 @@
 package com.menezes.neto.dreamshops.service.product;
 
+import com.menezes.neto.dreamshops.model.Category;
 import com.menezes.neto.dreamshops.model.Product;
+import com.menezes.neto.dreamshops.repository.CategoryRepository;
+import com.menezes.neto.dreamshops.repository.ProductRepository;
 import com.menezes.neto.dreamshops.request.AddProductRequest;
 import com.menezes.neto.dreamshops.request.ProductUpdateRequest;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+@Service
+@AllArgsConstructor
 public class ProductService implements IProductService {
+
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     @Override
-    public Product add(AddProductRequest product) {
-        return null;
+    public Product add(AddProductRequest productRequest) {
+        Category category = Optional.ofNullable(categoryRepository.findByName(productRequest.getCategory().getName()))
+                .orElseGet(() -> {
+                    Category newCategory = new Category(productRequest.getCategory().getName());
+                    return categoryRepository.save(newCategory);
+                });
+        productRequest.setCategory(category);
+        return productRepository.save(createProduct(productRequest, category));
+    }
+
+    private Product createProduct(AddProductRequest request, Category category) {
+        return new Product(
+                request.getName(),
+                request.getBrand(),
+                request.getPrice(),
+                request.getInventory(),
+                request.getDescription(),
+                category
+        );
     }
 
     @Override
