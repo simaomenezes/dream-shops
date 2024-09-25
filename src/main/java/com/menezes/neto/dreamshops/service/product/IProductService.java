@@ -1,5 +1,6 @@
 package com.menezes.neto.dreamshops.service.product;
 
+import com.menezes.neto.dreamshops.dto.ProductDTO;
 import com.menezes.neto.dreamshops.model.Product;
 import com.menezes.neto.dreamshops.request.AddProductRequest;
 import com.menezes.neto.dreamshops.request.ProductUpdateRequest;
@@ -19,5 +20,7 @@ public interface IProductService {
     List<Product> getByBrandAndName(String brand, String name);
     Long countByBrandAndName(String brand, String name);
 
-    List<Product> getConvertedProducts(List<Product> products);
+    List<ProductDTO> getConvertedProducts(List<Product> products);
+
+    ProductDTO convertToDTO(Product product);
 }
