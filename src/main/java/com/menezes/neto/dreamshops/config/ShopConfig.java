@@ -1,5 +1,6 @@
 package com.menezes.neto.dreamshops.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,6 +9,6 @@ public class ShopConfig {
 
     @Bean
     public ModelMapper modelMapper(){
-        return new MoldeMapper();
+        return new ModelMapper();
     }
 }
