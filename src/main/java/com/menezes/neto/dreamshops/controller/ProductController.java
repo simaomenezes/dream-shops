@@ -4,6 +4,7 @@ import com.menezes.neto.dreamshops.dto.ProductDTO;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Product;
 import com.menezes.neto.dreamshops.request.AddProductRequest;
+import com.menezes.neto.dreamshops.request.ProductUpdateRequest;
 import com.menezes.neto.dreamshops.response.ApiResponse;
 import com.menezes.neto.dreamshops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,27 @@ public class ProductController {
             return ResponseEntity.status(CREATED).body(new ApiResponse("Add product success!", productDTOCreated));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/product/{id}/update")
+    public ResponseEntity<ApiResponse> update(@RequestBody ProductUpdateRequest request, @PathVariable Long id) {
+        try {
+            Product product = service.update(request, id);
+            ProductDTO productDTO = service.convertToDTO(product);
+            return ResponseEntity.ok(new ApiResponse("Update product success!!!!", productDTO));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/product/{id}/delete")
+    public ResponseEntity<ApiResponse> deleteById(@PathVariable Long id) {
+        try {
+            service.deleteById(id);
+            return ResponseEntity.ok(new ApiResponse("Delete product with success!!!", id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 }
