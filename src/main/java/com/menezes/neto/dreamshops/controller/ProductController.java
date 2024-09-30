@@ -71,4 +71,26 @@ public class ProductController {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @GetMapping("/by/brand-and-name")
+    public ResponseEntity<ApiResponse> getByBrandAndName(@RequestParam String brand, @RequestParam String name) {
+        try {
+            List<Product> productListFound = service.getByBrandAndName(brand, name);
+            List<ProductDTO> productDTOList = service.getConvertedProducts(productListFound);
+            return ResponseEntity.ok(new ApiResponse("Success", productDTOList));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/by/category")
+    public ResponseEntity<ApiResponse> getByCategory(@RequestParam String category) {
+        try {
+            List<Product> productListFound = service.getByCategory(category);
+            List<ProductDTO> productDTOList = service.getConvertedProducts(productListFound);
+            return ResponseEntity.ok(new ApiResponse("success", productDTOList));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
 }
