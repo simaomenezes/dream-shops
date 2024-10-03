@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Service
 @AllArgsConstructor
-public class CategoryService implements ICategory{
+public class CategoryService implements ICategoryService{
 
     private final CategoryRepository repository;
 

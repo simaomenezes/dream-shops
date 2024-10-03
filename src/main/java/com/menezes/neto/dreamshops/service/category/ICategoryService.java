@@ -4,7 +4,7 @@ import com.menezes.neto.dreamshops.model.Category;
 import java.util.List;
 import java.util.Set;
 
-public interface ICategory {
+public interface ICategoryService {
 
     Category getById(Long id);
     Category findByName(String name);
