@@ -1,5 +1,6 @@
 package com.menezes.neto.dreamshops.service.category;
 
+import com.menezes.neto.dreamshops.exceptions.AlreadyExistsException;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Category;
 import com.menezes.neto.dreamshops.repository.CategoryRepository;
@@ -33,17 +34,25 @@ public class CategoryService implements ICategory{
 
     @Override
     public Category add(Category category) {
-        return null;
+        return Optional.of(category)
+                .filter(c -> !repository.existsByName(c.getName()))
+                    .map(repository::save)
+                        .orElseThrow(() -> new AlreadyExistsException(category.getName()+" alredy exists"));
     }
 
     @Override
     public Category update(Category category, Long id) {
-        return null;
+        return Optional.ofNullable(getById(id)).map(oldCat -> {
+            oldCat.setName(category.getName());
+            return repository.save(oldCat);
+        }).orElseThrow(() -> new ResourceNotFoundException("Category not found!!!!"));
     }
 
     @Override
     public void delete(Long id) {
-
+        repository.findById(id).ifPresentOrElse(repository::delete, () -> {
+            throw new ResourceNotFoundException("Category not found!!!");
+        });
     }
 
     @Override
