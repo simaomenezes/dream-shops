@@ -1,6 +1,7 @@
 package com.menezes.neto.dreamshops.service.image;
 
 import com.menezes.neto.dreamshops.dto.ImageDTO;
+import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Image;
 import com.menezes.neto.dreamshops.model.Product;
 import com.menezes.neto.dreamshops.repository.ImageRepository;
@@ -24,12 +25,15 @@ public class ImageService implements IImageService{
 
     @Override
     public Image getById(Long id) {
-        return null;
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No image found with id: "+ id));
     }
 
     @Override
     public void deleteById(Long id) {
-
+        repository.findById(id).ifPresentOrElse(repository::delete, () -> {
+            throw new ResourceNotFoundException("No image found with id: " + id);
+        });
     }
 
     @Override
@@ -66,6 +70,13 @@ public class ImageService implements IImageService{
 
     @Override
     public void update(MultipartFile file, Long id) {
-
+        try {
+            Image imageFound = getById(id);
+            imageFound.setFileName(file.getName());
+            imageFound.setFileType(file.getContentType());
+            imageFound.setImage(new SerialBlob(file.getBytes()));
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
