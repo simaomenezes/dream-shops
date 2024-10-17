@@ -1,5 +1,6 @@
 package com.menezes.neto.dreamshops.service.user;
 
+import com.menezes.neto.dreamshops.dto.UserDTO;
 import com.menezes.neto.dreamshops.exceptions.AlreadyExistsException;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.User;
@@ -7,6 +8,7 @@ import com.menezes.neto.dreamshops.repository.UserRepository;
 import com.menezes.neto.dreamshops.request.AddUserRequest;
 import com.menezes.neto.dreamshops.request.UpdateUserRequest;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserService implements IUserService{
     private UserRepository repository;
+    private ModelMapper modelMapper;
     @Override
     public User getById(Long id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
@@ -48,5 +51,10 @@ public class UserService implements IUserService{
         repository.findById(id).ifPresentOrElse(repository::delete, () ->{
             throw new ResourceNotFoundException("User not found!");
         });
+    }
+
+    @Override
+    public UserDTO convertUserToDto(User user) {
+        return modelMapper.map(user, UserDTO.class);
     }
 }
