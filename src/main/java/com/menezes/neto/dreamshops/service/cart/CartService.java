@@ -16,7 +16,7 @@ public class CartService implements ICartService{
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
     @Override
     public Cart getById(Long id) {
-        return null;
+        return repository.findById(id).get();
     }
 
     @Override
@@ -27,6 +27,7 @@ public class CartService implements ICartService{
     public BigDecimal getTotalPrice(Long id) {
         return null;
     }
+
 
     @Override
     public Long initializeNewCart() {
