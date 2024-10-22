@@ -6,11 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
 public class CartService implements ICartService{
     private final CartRepository repository;
+
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
     @Override
     public Cart getById(Long id) {
         return null;
@@ -27,7 +30,10 @@ public class CartService implements ICartService{
 
     @Override
     public Long initializeNewCart() {
-        return 0L;
+        Cart newCart = new Cart();
+        Long newCartId = cartIdGenerator.incrementAndGet();
+        newCart.setId(newCartId);
+        return repository.save(newCart).getId();
     }
 
     @Override
