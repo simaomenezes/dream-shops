@@ -83,12 +83,55 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/by/category")
-    public ResponseEntity<ApiResponse> getByCategory(@RequestParam String category) {
+    @GetMapping("/by/brand")
+    public ResponseEntity<ApiResponse> getByBrand(@RequestParam String brand) {
         try {
-            List<Product> productListFound = service.getByCategory(category);
+            List<Product> productListFound = service.getByBrand(brand);
             List<ProductDTO> productDTOList = service.getConvertedProducts(productListFound);
             return ResponseEntity.ok(new ApiResponse("success", productDTOList));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/by/{name}/products")
+    public ResponseEntity<ApiResponse> getByName(@PathVariable String name){
+        try {
+            List<Product> productsList = service.getByName(name);
+            List<ProductDTO> productsDTOList = service.getConvertedProducts(productsList);
+            return ResponseEntity.ok(new ApiResponse("success", productsDTOList));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/by/{category}/all/products")
+    public ResponseEntity<ApiResponse> getByCategory(@PathVariable String category){
+        try {
+            List<Product> productList = service.getByCategory(category);
+            List<ProductDTO> productDTOList = service.getConvertedProducts(productList);
+            return ResponseEntity.ok(new ApiResponse("success", productDTOList));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/count/by-brand/and-name")
+    public ResponseEntity<ApiResponse> countByBrandAndName(@RequestParam String brand, @RequestParam String name){
+        try {
+            Long countProduct = service.countByBrandAndName(brand, name);
+            return ResponseEntity.ok(new ApiResponse("success", countProduct));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/by/category-and-brand")
+    public ResponseEntity<ApiResponse> getByCategoryAndBrand(@RequestParam String category, @RequestParam String brand){
+        try {
+            List<Product> productList = service.getByCategoryAndBrand(category, brand);
+            List<ProductDTO> productDTOList = service.getConvertedProducts(productList);
+            return  ResponseEntity.ok(new ApiResponse("success", productDTOList));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
