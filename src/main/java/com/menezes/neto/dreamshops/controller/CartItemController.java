@@ -38,7 +38,6 @@ public class CartItemController {
                 @PathVariable Long cartId,
                 @PathVariable Long itemId,
                 @RequestParam Integer quantity){
-
         try {
             service.updateItemQuantity(cartId, itemId, quantity);
             return ResponseEntity.ok(new ApiResponse("Update success", null));
