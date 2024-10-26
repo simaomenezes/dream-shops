@@ -45,5 +45,15 @@ public class CartItemController {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @DeleteMapping("/cart/{cartId}/item/{itemId}/remove")
+    public ResponseEntity<ApiResponse> removeItemFromCart(@PathVariable Long cartId, @PathVariable Long itemId){
+        try {
+            service.removeItemFromCart(cartId, itemId);
+            return ResponseEntity.ok(new ApiResponse("success, item removed:", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
 }
 
