@@ -2,13 +2,16 @@ package com.menezes.neto.dreamshops.service.cart;
 
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Cart;
+import com.menezes.neto.dreamshops.model.User;
 import com.menezes.neto.dreamshops.repository.CartItemRepository;
 import com.menezes.neto.dreamshops.repository.CartRepository;
+import com.menezes.neto.dreamshops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -17,6 +20,7 @@ public class CartService implements ICartService{
     private final CartRepository repository;
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
     private final CartItemRepository cartItemRepository;
+    private final IProductService productService;
 
     @Override
     public Cart getById(Long id) {
@@ -31,7 +35,7 @@ public class CartService implements ICartService{
     public void clearCart(Long id) {
         Cart cart = getById(id);
         cartItemRepository.deleteAllByCartId(id);
-        cart.getItems().clear();
+        cart.clearCart();
         repository.deleteById(id);
     }
 
@@ -43,11 +47,12 @@ public class CartService implements ICartService{
 
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return repository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getByUserId(user.getId())).orElseGet(() ->{
+            Cart cart = new Cart();
+            cart.setUser(user);
+            return repository.save(cart);
+        });
     }
 
     @Override
