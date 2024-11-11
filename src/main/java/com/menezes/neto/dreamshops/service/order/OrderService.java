@@ -27,7 +27,7 @@ public class OrderService implements IOrderService{
     private final OrderRepository repository;
     private final CartService cartService;
     private final ProductRepository productRepository;
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Transactional
     @Override
