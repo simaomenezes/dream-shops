@@ -1,6 +1,7 @@
 package com.menezes.neto.dreamshops.service.product;
 
 import com.menezes.neto.dreamshops.dto.ProductDTO;
+import com.menezes.neto.dreamshops.exceptions.AlreadyExistsException;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Category;
 import com.menezes.neto.dreamshops.model.Product;
@@ -26,6 +27,10 @@ public class ProductService implements IProductService {
 
     @Override
     public Product add(AddProductRequest productRequest) {
+
+        if(prodoctExists(productRequest.getName(), productRequest.getBrand())){
+            throw new AlreadyExistsException(productRequest.getName()+ " "+productRequest.getBrand()+ " already exists, you may update this product instead!");
+        }
         Category category = Optional.ofNullable(categoryRepository.findByName(productRequest.getCategory().getName()))
                 .orElseGet(() -> {
                     Category newCategory = new Category(productRequest.getCategory().getName());
@@ -33,6 +38,10 @@ public class ProductService implements IProductService {
                 });
         productRequest.setCategory(category);
         return repository.save(createProduct(productRequest, category));
+    }
+
+    private boolean prodoctExists(String name, String brand) {
+        return repository.existsByNameAndBrand(name, brand);
     }
 
     private Product createProduct(AddProductRequest request, Category category) {
