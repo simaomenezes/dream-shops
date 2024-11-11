@@ -22,7 +22,8 @@ public class OrderController {
     public ResponseEntity<ApiResponse> creteOrder(@RequestParam Long userId){
         try {
             Order order = service.place(userId);
-            return ResponseEntity.ok(new ApiResponse("Order success", order));
+            OrderDTO orderDTO = service.convertToDTO(order);
+            return ResponseEntity.ok(new ApiResponse("Order success", orderDTO));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error Ocured!", e.getMessage()));
         }

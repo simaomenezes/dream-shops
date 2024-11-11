@@ -1,6 +1,7 @@
 package com.menezes.neto.dreamshops.controller;
 
 import com.menezes.neto.dreamshops.dto.ProductDTO;
+import com.menezes.neto.dreamshops.exceptions.AlreadyExistsException;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Product;
 import com.menezes.neto.dreamshops.request.AddProductRequest;
@@ -46,7 +47,7 @@ public class ProductController {
             Product productCreated = service.add(productRequest);
             ProductDTO productDTOCreated = service.convertToDTO(productCreated);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Add product success!", productDTOCreated));
-        } catch (Exception e) {
+        } catch (AlreadyExistsException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
     }
