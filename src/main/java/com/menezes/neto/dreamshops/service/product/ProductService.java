@@ -27,6 +27,10 @@ public class ProductService implements IProductService {
 
     @Override
     public Product add(AddProductRequest productRequest) {
+        // check if the category is found in the DB
+        // If Yes, set it as the new product category
+        // If No, the save it as a new category
+        // The set as the new product category.
 
         if(prodoctExists(productRequest.getName(), productRequest.getBrand())){
             throw new AlreadyExistsException(productRequest.getName()+ " "+productRequest.getBrand()+ " already exists, you may update this product instead!");
