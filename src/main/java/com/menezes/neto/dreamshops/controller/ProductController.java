@@ -48,7 +48,7 @@ public class ProductController {
             ProductDTO productDTOCreated = service.convertToDTO(productCreated);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Add product success!", productDTOCreated));
         } catch (AlreadyExistsException e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 

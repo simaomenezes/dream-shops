@@ -23,9 +23,9 @@ public class OrderController {
         try {
             Order order = service.place(userId);
             OrderDTO orderDTO = service.convertToDTO(order);
-            return ResponseEntity.ok(new ApiResponse("Order success", orderDTO));
+            return ResponseEntity.ok(new ApiResponse("Item Order success", orderDTO));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error Ocured!", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error Occured!", e.getMessage()));
         }
     }
 
@@ -40,7 +40,7 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}/order")
-    public ResponseEntity<ApiResponse> getUserOrder(@PathVariable Long userId){
+    public ResponseEntity<ApiResponse> getUserOrders(@PathVariable Long userId){
         try {
             List<OrderDTO> orderDTOList = service.getUserOrdersById(userId);
             return ResponseEntity.ok(new ApiResponse("Item Order Success!", orderDTOList));
