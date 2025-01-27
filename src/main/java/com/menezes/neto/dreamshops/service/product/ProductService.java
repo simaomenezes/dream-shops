@@ -3,10 +3,11 @@ package com.menezes.neto.dreamshops.service.product;
 import com.menezes.neto.dreamshops.dto.ProductDTO;
 import com.menezes.neto.dreamshops.exceptions.AlreadyExistsException;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
+import com.menezes.neto.dreamshops.model.CartItem;
 import com.menezes.neto.dreamshops.model.Category;
+import com.menezes.neto.dreamshops.model.OrderItem;
 import com.menezes.neto.dreamshops.model.Product;
-import com.menezes.neto.dreamshops.repository.CategoryRepository;
-import com.menezes.neto.dreamshops.repository.ProductRepository;
+import com.menezes.neto.dreamshops.repository.*;
 import com.menezes.neto.dreamshops.request.AddProductRequest;
 import com.menezes.neto.dreamshops.request.ProductUpdateRequest;
 import lombok.AllArgsConstructor;
@@ -24,14 +25,12 @@ public class ProductService implements IProductService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository repository;
     private final ModelMapper modelMapper;
+    private final CartItemRepository cartItemRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public Product add(AddProductRequest productRequest) {
-        // check if the category is found in the DB
-        // If Yes, set it as the new product category
-        // If No, the save it as a new category
-        // The set as the new product category.
-
         if(prodoctExists(productRequest.getName(), productRequest.getBrand())){
             throw new AlreadyExistsException(productRequest.getName()+ " "+productRequest.getBrand()+ " already exists, you may update this product instead!");
         }
@@ -66,8 +65,36 @@ public class ProductService implements IProductService {
 
     @Override
     public void deleteById(Long id) {
-        repository.findById(id).ifPresentOrElse((p -> repository.delete(p)), () -> {throw  new ResourceNotFoundException("Product not found!");});
-        //repository.findById(id).ifPresentOrElse(repository::delete, () -> {throw  new ResourceNotFoundException("Product not found!");});
+
+        List<CartItem> cartItems = cartItemRepository.findByProductId(id);
+        List<OrderItem> orderItems = orderItemRepository.findByProductId(id);
+
+        repository.findById(id)
+                .ifPresentOrElse(product -> {
+                    // Functional approach for category removal
+                    Optional.ofNullable(product.getCategory())
+                            .ifPresent(category -> category.getProducts().remove(product));
+                    product.setCategory(null);
+
+                    // Functional approach for updating cart items
+                    cartItems.stream()
+                            .peek(cartItem -> {
+                                cartItem.setProduct(null);
+                                cartItem.setTotalPrice();
+                            })
+                            .forEach(cartItemRepository::save);
+
+                    // Functional approach for updating order items
+                    orderItems.stream()
+                            .peek(orderItem -> {
+                                orderItem.setProduct(null);
+                            }).forEach(orderItemRepository::save);
+
+                    repository.delete(product);
+
+                }, () -> {
+                    throw  new ResourceNotFoundException("Product not found!");
+                });
     }
 
     @Override
@@ -133,5 +160,15 @@ public class ProductService implements IProductService {
     public ProductDTO convertToDTO(Product product) {
         ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
         return productDTO;
+    }
+
+    @Override
+    public List<Product> findDistinctProductsByName() {
+        return List.of();
+    }
+
+    @Override
+    public List<String> getAllDistinctBrands() {
+        return List.of();
     }
 }
