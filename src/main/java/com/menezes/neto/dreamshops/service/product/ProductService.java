@@ -14,9 +14,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -164,11 +163,17 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> findDistinctProductsByName() {
-        return List.of();
+        List<Product> products = repository.findAll();
+        Map<String, Product> distinctProductsMap = products.stream()
+                .collect(Collectors.toMap(
+                        Product::getName,
+                        product -> product,
+                        (existing, replacement) -> existing));
+        return new ArrayList<>(distinctProductsMap.values());
     }
 
     @Override
     public List<String> getAllDistinctBrands() {
-        return List.of();
+        return repository.findAll().stream().map(Product::getBrand).distinct().collect(Collectors.toList());
     }
 }
