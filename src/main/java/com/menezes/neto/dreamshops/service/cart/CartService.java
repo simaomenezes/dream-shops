@@ -1,12 +1,15 @@
 package com.menezes.neto.dreamshops.service.cart;
 
+import com.menezes.neto.dreamshops.dto.CartDTO;
 import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Cart;
 import com.menezes.neto.dreamshops.model.User;
 import com.menezes.neto.dreamshops.repository.CartItemRepository;
 import com.menezes.neto.dreamshops.repository.CartRepository;
 import com.menezes.neto.dreamshops.service.product.IProductService;
+import com.menezes.neto.dreamshops.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,8 @@ public class CartService implements ICartService{
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
     private final CartItemRepository cartItemRepository;
     private final IProductService productService;
+    private final ModelMapper modelMapper;
+    private final IUserService iUserService;
 
     @Override
     public Cart getById(Long id) {
@@ -58,6 +63,11 @@ public class CartService implements ICartService{
     @Override
     public Cart getByUserId(Long userId) {
         return repository.findByUserId(userId);
+    }
+
+    @Override
+    public CartDTO convertToDTO(Cart cart) {
+        return modelMapper.map(cart, CartDTO.class);
     }
 
 }

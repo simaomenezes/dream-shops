@@ -1,6 +1,7 @@
 package com.menezes.neto.dreamshops.service.cart;
 
 
+import com.menezes.neto.dreamshops.dto.CartDTO;
 import com.menezes.neto.dreamshops.model.Cart;
 import com.menezes.neto.dreamshops.model.User;
 
@@ -12,4 +13,5 @@ public interface ICartService {
     BigDecimal getTotalPrice(Long id);
     Cart initializeNewCart(User user);
     Cart getByUserId(Long userId);
+    CartDTO convertToDTO(Cart cart);
 }

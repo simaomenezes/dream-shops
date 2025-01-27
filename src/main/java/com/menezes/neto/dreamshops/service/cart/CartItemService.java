@@ -21,13 +21,14 @@ public class CartItemService implements ICartItemService{
     private final ProductService productService;
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
-        //1. Get the cart
-        //2. Get the product
-        //3. Check if the product already in the cart
-        //4. If Yes, then increase the quantity with the requested quantity
-        //5. If No, then initiate a new CartItem entry.
         Cart cart = cartService.getById(cartId);
         Product product = productService.getById(productId);
+
+        System.out.println("\n\n=====================================================================================");
+        System.out.println("The product Id:" + productId);
+        System.out.println("The product:" + product);
+        System.out.println("\n\n=====================================================================================");
+
         CartItem cartItem = cart.getItems().stream().filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst().orElse(new CartItem());
         if(cartItem.getId() == null){
