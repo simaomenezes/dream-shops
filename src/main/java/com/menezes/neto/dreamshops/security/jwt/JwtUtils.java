@@ -17,10 +17,10 @@ import java.util.List;
 
 @Component
 public class JwtUtils {
-    @Value("${auth.toke.jwtSecret}")
+    @Value("${api.auth.token.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${auth.token.expirationInMils}")
+    @Value("${api.auth.token.expirationInMils}")
     private int expirationTime;
 
     public String generateTokenForUser(Authentication authentication){
