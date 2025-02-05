@@ -1,45 +1,73 @@
 package com.menezes.neto.dreamshops.service.cart;
 
+import com.menezes.neto.dreamshops.dto.CartDTO;
+import com.menezes.neto.dreamshops.exceptions.ResourceNotFoundException;
 import com.menezes.neto.dreamshops.model.Cart;
+import com.menezes.neto.dreamshops.model.User;
+import com.menezes.neto.dreamshops.repository.CartItemRepository;
 import com.menezes.neto.dreamshops.repository.CartRepository;
+import com.menezes.neto.dreamshops.service.product.IProductService;
+import com.menezes.neto.dreamshops.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
 public class CartService implements ICartService{
     private final CartRepository repository;
-
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
+    private final CartItemRepository cartItemRepository;
+    private final IProductService productService;
+    private final ModelMapper modelMapper;
+    private final IUserService iUserService;
+
     @Override
     public Cart getById(Long id) {
-        return repository.findById(id).get();
+        Cart cart = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not Found"));
+        BigDecimal totalAmount = cart.getTotalAmount();
+        cart.setTotalAmount(totalAmount);
+        return repository.save(cart);
     }
 
+    @Transactional
     @Override
     public void clearCart(Long id) {
+        Cart cart = getById(id);
+        cartItemRepository.deleteAllByCartId(id);
+        cart.clearCart();
+        repository.deleteById(id);
     }
 
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        return null;
+        Cart cart = getById(id);
+        return cart.getTotalAmount();
     }
 
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return repository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getByUserId(user.getId())).orElseGet(() ->{
+            Cart cart = new Cart();
+            cart.setUser(user);
+            return repository.save(cart);
+        });
     }
 
     @Override
     public Cart getByUserId(Long userId) {
         return repository.findByUserId(userId);
+    }
+
+    @Override
+    public CartDTO convertToDTO(Cart cart) {
+        return modelMapper.map(cart, CartDTO.class);
     }
 
 }

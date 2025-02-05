@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: dream-shops
+  output:
+    ansi:
+      enabled: ALWAYS
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dream_shops_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+server:
+  port: 9191
+api:
+  prefix: /api/v1
+  auth:
+    token:
+      expirationInMils: 72000000
+      jwtSecret: 36763979244226452948404D635166546A576D5A7134743777217A25432A462D
+######## Stripe payment configuration ############
+stripe:
+  secret:
+    key: sk_test_51PoKlP2LpLSZLOoeUlOyJSuLVJtG99jaV0DiZ2DcAVScUl2m5R58FkNg3Udl2SEnuQyqe1S8xxelOTnOx5ZwsCKo00AlIM4qrx

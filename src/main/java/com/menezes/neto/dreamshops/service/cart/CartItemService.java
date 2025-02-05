@@ -23,6 +23,12 @@ public class CartItemService implements ICartItemService{
     public void addItemToCart(Long cartId, Long productId, int quantity) {
         Cart cart = cartService.getById(cartId);
         Product product = productService.getById(productId);
+
+        System.out.println("\n\n=====================================================================================");
+        System.out.println("The product Id:" + productId);
+        System.out.println("The product:" + product);
+        System.out.println("\n\n=====================================================================================");
+
         CartItem cartItem = cart.getItems().stream().filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst().orElse(new CartItem());
         if(cartItem.getId() == null){
@@ -41,7 +47,10 @@ public class CartItemService implements ICartItemService{
 
     @Override
     public void removeItemFromCart(Long cartId, Long productId) {
-
+        Cart cart = cartService.getById(cartId);
+        CartItem itemToRemove = getCartItem(cartId, productId);
+        cart.removeItem(itemToRemove);
+        cartRepository.save(cart);
     }
 
     @Override
